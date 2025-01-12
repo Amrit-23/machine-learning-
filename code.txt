@@ -1,0 +1,303 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# Synthetic Dataset
+X=pd.read_csv('https://drive.google.com/uc?id=1cFZHElm5ebn1OolgmrLOxw91T8am3S5C').values
+y=pd.read_csv('https://drive.google.com/uc?id=1rY3oTHxa1FT3fdcjWuKKQ4DOXnU8AeQM').values
+
+# Normalize Data
+X_mean, X_std = X.mean(), X.std()
+y_mean, y_std = y.mean(), y.std()
+X_norm = (X - X_mean) / X_std
+y_norm = (y - y_mean) / y_std
+
+# Add bias term
+X_with_bias = np.hstack((np.ones((X_norm.shape[0], 1)), X_norm))
+
+# Gradient Descent Function
+def gradient_descent(X, y, theta, lr,tolerance, max_iter):
+    m = len(y)
+    cost_history = []
+    
+    for i in range(max_iter):
+        predictions = X @ theta
+        gradients = (1 / m) * (X.T @ (predictions - y))
+        theta -= lr * gradients
+        cost = np.sum((predictions - y) ** 2) / (2 * m)
+        cost_history.append(cost)
+        
+        # Check for convergence
+        if i > 0 and abs(cost_history[-1] - cost_history[-2])<tolerance :
+            break
+
+    return theta,cost, cost_history
+
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+learning_rate = 0.1
+tolerance = 1e-6
+max_iterations = 50
+
+# Run Gradient Descent
+theta_norm,final_cost, cost_history = gradient_descent(
+    X_with_bias, y_norm, theta_init, learning_rate,tolerance, max_iterations
+)
+
+# Denormalize Parameters
+theta_0 = theta_norm[0] * y_std + y_mean - theta_norm[1] * X_mean * (y_std / X_std)
+theta_1 = theta_norm[1] * (y_std / X_std)
+
+# Results
+print("Final Parameters (Denormalized):")
+print(f"Theta_0: {theta_0[0]:.4f}")
+print(f"Theta_1: {theta_1[0]:.4f}")
+print(f"Final Cost Function Value: {final_cost:.4f}")
+print(f"Number of Iterations: {len(cost_history)}")
+
+plt.figure(figsize=(8, 5))
+plt.plot(range(1, len(cost_history) + 1),cost_history, marker='o', linestyle='-')
+plt.title("Cost Function vs Iterations (First 50 Iterations)")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.grid(True)
+plt.show()
+# Final parameters (denormalized)
+theta_0 = 0.9904
+theta_1 = 0.0008
+
+# Predicted line
+y_pred_line = theta_0 + theta_1 * X
+
+# Plotting the dataset and the regression line
+plt.figure(figsize=(8, 5))
+plt.scatter(X, y, color='blue', label='Data Points')  # Original data points
+plt.plot(X, y_pred_line, color='red', label='Regression Line')  # Fitted line
+plt.title("Dataset and Regression Line")
+plt.xlabel("X")
+plt.ylabel("y")
+plt.legend()
+plt.grid(True)
+plt.show()
+#For different iterations
+#For lr=0.005
+def gradient_descent_with_tracking(X, y, theta, lr, max_iter):
+    m = len(y)
+    cost_history = []
+
+    for _ in range(max_iter):
+        predictions = X @ theta
+        gradients = (1 / m) * (X.T @ (predictions - y))
+        theta -= lr * gradients
+        cost = np.sum((predictions - y) ** 2) / (2 * m)
+        cost_history.append(cost)
+
+    return theta, cost_history
+    
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+max_iterations = 50
+
+# Test learning rates
+learning_rates = [0.005]
+cost_histories = []
+
+for lr in learning_rates:
+    _, cost_history = gradient_descent_with_tracking(
+        X_with_bias, y_norm, theta_init.copy(), lr, max_iterations
+    )
+    cost_histories.append(cost_history)
+    
+# Plot Cost Function vs Iterations for each learning rate
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(cost_history) + 1), cost_history, label=f"lr",marker="o")
+plt.title("Cost Function vs Iterations for Different Learning Rates")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+#lr=0.05
+
+def gradient_descent_with_tracking(X, y, theta, lr, max_iter):
+    m = len(y)
+    cost_history = []
+
+    for _ in range(max_iter):
+        predictions = X @ theta
+        gradients = (1 / m) * (X.T @ (predictions - y))
+        theta -= lr * gradients
+        cost = np.sum((predictions - y) ** 2) / (2 * m)
+        cost_history.append(cost)
+
+    return theta, cost_history
+    
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+max_iterations = 50
+
+# Test learning rates
+learning_rates = [0.05]
+cost_histories = []
+
+for lr in learning_rates:
+    _, cost_history = gradient_descent_with_tracking(
+        X_with_bias, y_norm, theta_init.copy(), lr, max_iterations
+    )
+    cost_histories.append(cost_history)
+    
+# Plot Cost Function vs Iterations for each learning rate
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(cost_history) + 1), cost_history, label=f"lr",marker="o")
+plt.title("Cost Function vs Iterations for Different Learning Rates")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+#lr=5
+
+def gradient_descent_with_tracking(X, y, theta, lr, max_iter):
+    m = len(y)
+    cost_history = []
+
+    for _ in range(max_iter):
+        predictions = X @ theta
+        gradients = (1 / m) * (X.T @ (predictions - y))
+        theta -= lr * gradients
+        cost = np.sum((predictions - y) ** 2) / (2 * m)
+        cost_history.append(cost)
+
+    return theta, cost_history
+    
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+max_iterations = 50
+
+# Test learning rates
+learning_rates = [5]
+cost_histories = []
+
+for lr in learning_rates:
+    _, cost_history = gradient_descent_with_tracking(
+        X_with_bias, y_norm, theta_init.copy(), lr, max_iterations
+    )
+    cost_histories.append(cost_history)
+    
+# Plot Cost Function vs Iterations for each learning rate
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(cost_history) + 1), cost_history, label=f"lr",marker="o")
+plt.title("Cost Function vs Iterations for Different Learning Rates")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Cost Function
+def compute_cost(X, y, theta):
+    m = len(y)
+    predictions = X @ theta
+    return np.sum((predictions - y) ** 2) / (2 * m)
+
+# Gradient Descent Methods
+def batch_gradient_descent(X, y, theta, lr, max_iter):
+    m = len(y)
+    cost_history = []
+    for _ in range(max_iter):
+        predictions = X @ theta
+        gradients = (1 / m) * (X.T @ (predictions - y))
+        theta -= lr * gradients
+        cost_history.append(compute_cost(X, y, theta))
+    return theta, cost_history
+
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+learning_rate = 0.1
+max_iterations = 50
+batch_size = 2  # For mini-batch
+
+# Run all gradient descent methods
+theta_batch, cost_batch = batch_gradient_descent(X_with_bias, y_norm, theta_init.copy(), learning_rate, max_iterations)
+
+# Plot Cost Function vs Iterations
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(cost_batch) + 1), cost_batch, label="Batch Gradient Descent", color="blue")
+plt.title("Cost Function vs Iterations for Batch Gradient Descent Methods")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.legend()
+plt.grid(True)
+plt.show()
+# Cost Function
+def compute_cost(X, y, theta):
+    m = len(y)
+    predictions = X @ theta
+    return np.sum((predictions - y) ** 2) / (2 * m)
+
+def stochastic_gradient_descent(X, y, theta, lr, max_iter):
+    m = len(y)
+    cost_history = []
+    for _ in range(max_iter):
+        for i in range(m):
+            xi = X[i, :].reshape(1, -1)
+            yi = y[i]
+            predictions = xi @ theta
+            gradients = (xi.T * (predictions - yi))
+            theta -= lr * gradients
+            cost_history.append(compute_cost(X, y, theta))
+    return theta, cost_history
+
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+learning_rate = 0.1
+max_iterations = 50
+
+# Run all gradient descent methods
+
+theta_sgd, cost_sgd = stochastic_gradient_descent(X_with_bias, y_norm, theta_init.copy(), learning_rate, max_iterations)
+
+# Plot Cost Function vs Iterations
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(cost_sgd) + 1),cost_sgd , label="Stochastic Gradient Descent", color="blue",marker="o")
+plt.title("Cost Function vs Iterations for Stochastic Gradient Descent Methods")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.legend()
+plt.grid(True)
+plt.show()
+def mini_batch_gradient_descent(X, y, theta, lr, max_iter, batch_size):
+    m = len(y)
+    cost_history = []
+    for _ in range(max_iter):
+        indices = np.random.permutation(m)
+        X_shuffled = X[indices]
+        y_shuffled = y[indices]
+        for i in range(0, m, batch_size):
+            X_batch = X_shuffled[i:i + batch_size]
+            y_batch = y_shuffled[i:i + batch_size]
+            predictions = X_batch @ theta
+            gradients = (1 / len(y_batch)) * (X_batch.T @ (predictions - y_batch))
+            theta -= lr * gradients
+        cost_history.append(compute_cost(X, y, theta))
+    return theta, cost_history
+
+# Initialize Parameters
+theta_init = np.zeros((2, 1))  # [theta_0, theta_1]
+learning_rate = 0.1
+max_iterations = 50
+batch_size = 2  # For mini-batch
+
+# Run all gradient descent methods
+theta_mini, cost_mini = mini_batch_gradient_descent(X_with_bias, y_norm, theta_init.copy(), learning_rate, max_iterations, batch_size)
+
+# Plot Cost Function vs Iterations
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(cost_mini) + 1), cost_mini, label="Mini-Batch Gradient Descent", color="blue", linestyle="-",marker="o")
+plt.title("Cost Function vs Iterations for Mini-Batch Gradient Descent Methods")
+plt.xlabel("Iterations")
+plt.ylabel("Cost Function (MSE)")
+plt.legend()
+plt.grid(True)
+plt.show()
